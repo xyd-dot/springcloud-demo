@@ -1,0 +1,10 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: cloud-user
+  cloud:
+    nacos:
+      server-addr: 124.221.169.50:8848
+      discovery:
+        namespace: 75df228f-a34b-4fd1-82b1-8979ac5a62cc

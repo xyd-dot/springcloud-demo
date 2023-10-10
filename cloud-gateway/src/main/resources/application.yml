@@ -1,0 +1,25 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: 124.221.169.50:8848
+      discovery:
+        namespace: 75df228f-a34b-4fd1-82b1-8979ac5a62cc
+    gateway:
+      routes:
+        - id: cloud-user
+          uri: lb://cloud-user
+          predicates:
+            - Path=/user/**
+        - id: cloud-auth
+          uri: lb://cloud-auth
+          predicates:
+            - Path=/auth/**
+
+jwt:
+  auth:
+    excludePaths:
+      - /auth/login
