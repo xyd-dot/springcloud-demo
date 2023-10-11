@@ -8,3 +8,8 @@ spring:
       server-addr: 124.221.169.50:8848
       discovery:
         namespace: 75df228f-a34b-4fd1-82b1-8979ac5a62cc
+  datasource:
+    url: jdbc:mysql://localhost:3306/oauth?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: sdw6934@
+    driver-class-name: com.mysql.cj.jdbc.Driver

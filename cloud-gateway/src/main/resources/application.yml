@@ -14,12 +14,14 @@ spring:
           uri: lb://cloud-user
           predicates:
             - Path=/user/**
+
         - id: cloud-auth
           uri: lb://cloud-auth
           predicates:
-            - Path=/auth/**
+            - Path=/login,/oauth/**
 
 jwt:
   auth:
     excludePaths:
-      - /auth/login
+      - /login
+      - /oauth/**

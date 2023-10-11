@@ -1,7 +1,5 @@
 package com.cloud.controller;
 
-import com.ligong.common.domain.R;
-import com.ligong.common.utils.UserLocal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @GetMapping("/hello")
-    public R hello(){
+    public String hello(){
 
-        Long user = UserLocal.getUser();
-        System.out.println(user);
 
         System.out.println("----------------------");
 
-        return R.ok();
+        return "ok";
     }
 
 

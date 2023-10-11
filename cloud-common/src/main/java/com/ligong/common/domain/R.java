@@ -27,9 +27,9 @@ public class R<T> {
         return new R<>(code, msg, null);
     }
 
-    public static <T> R<T> error(CommonException e) {
-        return new R<>(e.getCode(), e.getMessage(), null);
-    }
+//    public static <T> R<T> error(CommonException e) {
+//        return new R<>(e.getCode(), e.getMessage(), null);
+//    }
 
     public R() {
     }
