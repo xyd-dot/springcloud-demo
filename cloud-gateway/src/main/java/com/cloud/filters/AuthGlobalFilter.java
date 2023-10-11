@@ -45,21 +45,13 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Autowired
     private TokenStore tokenStore;
 
-    @Bean
-    public TokenStore tokenStore(){
-        return new JwtTokenStore(jwtAccessTokenConverter());
-    }
+
 
     public AuthGlobalFilter(AuthProperties authProperties) {
         this.authProperties = authProperties;
     }
 
-    @Autowired
-    public JwtAccessTokenConverter jwtAccessTokenConverter(){
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("123");
-        return converter;
-    }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
@@ -69,6 +61,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         for (String path : paths) {
             if(antPathMatcher.match(path,request.getPath().value())){
+                log.info(request.getPath().value()+"在白名单中，准予放行");
                 //放行
                 return chain.filter(exchange);
             }
@@ -76,8 +69,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         String token = this.getToken(exchange);
         if (token == null){
+            log.info("请求没有携带token");
             //token为null,没有认证
-            return buildReturnMono("没有认证",exchange);
+            return buildReturnMono("请求没有携带token",exchange);
         }
 
         //判断是否是有效的token
@@ -111,6 +105,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         if (StringUtils.isBlank(tokenStr)) {
             return null;
         }
+        //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTcwMjk0MjcsInVzZXJfbmFtZSI6Imxpc2kiLCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIl0sImp0aSI6IjM2MDQ2NDYxLTVkOTItNDI3ZS05YTMzLTlhYzdhNmNkZTg0MCIsImNsaWVudF9pZCI6ImNsaWVudCIsInNjb3BlIjpbInJlYWQiXX0.RFm5gBeD_eNB8EBFzz35KaffQqMIOwha3lyRVIZqTno
         String token = tokenStr.split(" ")[1];
         if (StringUtils.isBlank(token)) {
             return null;
@@ -121,26 +116,11 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private Mono<Void> buildReturnMono(String error, ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
         String jsonString = JSON.toJSONString(new RestErrorResponse(error));
-        byte[] bits = jsonString.getBytes(StandardCharsets.UTF_8);
-        DataBuffer buffer = response.bufferFactory().wrap(bits);
+        byte[] bytes = jsonString.getBytes(StandardCharsets.UTF_8);
+        DataBuffer buffer = response.bufferFactory().wrap(bytes);
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));
     }
 
-    private boolean isAllowPath(ServerHttpRequest request) {
-        boolean flag = false;
-
-        String path = request.getPath().toString();
-
-        //需要放行的路径
-        for (String excludePath : authProperties.getExcludePaths()) {
-
-            if (path.equals(excludePath)){
-                flag = true;
-                return flag;
-            }
-        }
-        return flag;
-    }
 }

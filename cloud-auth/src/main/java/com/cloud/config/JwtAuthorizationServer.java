@@ -11,14 +11,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import javax.sql.DataSource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @description: 该类的作用就是表示这个是一个授权服务
@@ -42,6 +39,10 @@ public class JwtAuthorizationServer extends AuthorizationServerConfigurerAdapter
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * 客户端信息存于数据库中
+     * @return
+     */
     @Bean
     public ClientDetailsService clientDetails(){
         JdbcClientDetailsService jdbcClientDetailsService = new JdbcClientDetailsService(dataSource);
@@ -50,12 +51,13 @@ public class JwtAuthorizationServer extends AuthorizationServerConfigurerAdapter
     }
 
     /**
-     * 客户端授权信息存储到数据库
+     * 配置客户端详情
      * @param clients
      * @throws Exception
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        //客户端信息存于数据库中
         clients.withClientDetails(clientDetails());
     }
 
@@ -84,5 +86,6 @@ public class JwtAuthorizationServer extends AuthorizationServerConfigurerAdapter
         endpoints.tokenStore(tokenStore())
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .authenticationManager(authenticationManager);
+
     }
 }

@@ -11,7 +11,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  public class SecurityConfig {
 
 
-  //安全拦截配置
+  /**
+   * 网关不会人任何url进行认证
+   * @param http
+   * @return
+   */
   @Bean
   public SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) {
 
